@@ -10,6 +10,8 @@ logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}
 
+sp = ["слона", "кролика"]
+
 
 @app.route('/post', methods=['POST'])
 def main():
@@ -41,9 +43,7 @@ def handle_dialog(req, res):
                 "Отстань!",
             ]
         }
-        # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
-        # Получим подсказки
+        res['response']['text'] = f'Привет! Купи {sp[0]}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
@@ -51,14 +51,23 @@ def handle_dialog(req, res):
         'ладно',
         'куплю',
         'покупаю',
-        'хорошо'
+        'хорошо',
+        "я покупаю",
+        'я куплю'
     ]:
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
-        res['response']['end_session'] = True
-        return
+        if len(sp) >= 2:
+            res['response'][
+                'text'] = f'{sp[0].capitalize()} можно найти на Яндекс.Маркете! А теперь купи {sp[1]}'
+            del sp[0]
+            return
+        else:
+            res['response'][
+                'text'] = f'{sp[0].capitalize()} можно найти на Яндекс.Маркете!'
+            res['response']['end_session'] = True
+            return
 
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {sp[0]}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
