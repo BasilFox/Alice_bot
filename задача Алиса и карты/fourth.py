@@ -4,7 +4,7 @@ import logging
 from flask import Flask, request
 
 # импортируем функции из нашего второго файла geo
-from geo import get_country, get_distance, get_coordinates
+from geo import get_country, get_distance, get_coordinates,get_geo_info
 
 app = Flask(__name__)
 
@@ -42,10 +42,11 @@ def handle_dialog(res, req):
         res['response']['text'] = 'Ты не написал название не одного города!'
     elif len(cities) == 1:
         res['response']['text'] = 'Этот город в стране - ' + \
-                                  get_country(cities[0])
+                                  get_geo_info(cities[0], 'country')
     elif len(cities) == 2:
-        distance = get_distance(get_coordinates(
-            cities[0]), get_coordinates(cities[1]))
+        cord1 = get_geo_info(cities[0], 'coordinates')
+        cord2 = get_geo_info(cities[1], 'coordinates')
+        distance = get_distance(cord1, cord2)
         res['response']['text'] = 'Расстояние между этими городами: ' + \
                                   str(round(distance)) + ' км.'
     else:
